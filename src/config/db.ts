@@ -3,7 +3,7 @@ import "./setup.js";
 
 const { Pool } = pg;
 
-const devConfig = { connectionString: process.env.DEV_DATABASE_URL };
+const devConfig = { connectionString: process.env.DATABASE_URL };
 const prodConfig = { connectionString: process.env.DATABASE_URL, ssl: {} };
 
 if (process.env.MODE === "PROD") {
