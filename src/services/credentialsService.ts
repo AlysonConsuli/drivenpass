@@ -54,3 +54,19 @@ export const getCredentialById = async (
   const credentialDecrypted = categoryUtils.decrypt([credential]);
   return credentialDecrypted[0];
 };
+
+export const deleteCredential = async (
+  userId: number,
+  credentialId: number
+) => {
+  const credential = await credentialsRepository.findCredentialById(
+    credentialId
+  );
+  if (!credential) {
+    throw notFoundError("Credential not found");
+  }
+  if (credential.userId !== userId) {
+    throw unauthorizedError("Credential belongs to another user");
+  }
+  await credentialsRepository.deleteCredentialById(credentialId);
+};

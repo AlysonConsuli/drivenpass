@@ -37,3 +37,11 @@ export const findCredentialById = async (credentialId: number) => {
   });
   return credential;
 };
+
+export const deleteCredentialById = async (credentialId: number) => {
+  await prisma.credentials.delete({
+    where: {
+      id: credentialId,
+    },
+  });
+};

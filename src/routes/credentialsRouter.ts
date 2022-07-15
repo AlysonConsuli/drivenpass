@@ -4,6 +4,7 @@ import {
   createCredential,
   getCredentials,
   getCredentialById,
+  deleteCredential,
 } from "../controllers/credentialsController.js";
 import { validateSchema } from "../middlewares/schemaValidator.js";
 import { validateToken } from "../middlewares/validateToken.js";
@@ -18,4 +19,5 @@ credentialRouter.post(
 );
 credentialRouter.get("/credentials", validateToken, getCredentials);
 credentialRouter.get("/credentials/:id", validateToken, getCredentialById);
+credentialRouter.delete("/credentials/:id", validateToken, deleteCredential);
 export default credentialRouter;
