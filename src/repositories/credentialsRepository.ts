@@ -19,3 +19,21 @@ export const insertCredential = async (
     data: credentialData,
   });
 };
+
+export const findCredentialsByUserId = async (userId: number) => {
+  const credentials = await prisma.credentials.findMany({
+    where: {
+      userId,
+    },
+  });
+  return credentials;
+};
+
+export const findCredentialById = async (credentialId: number) => {
+  const credential = await prisma.credentials.findUnique({
+    where: {
+      id: credentialId,
+    },
+  });
+  return credential;
+};
