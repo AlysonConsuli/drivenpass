@@ -23,10 +23,10 @@ export const createCredential = async (
   if (titles) {
     throw conflictError("User already has this title");
   }
-  const encryptedPasswrod: string = cryptr.encrypt(password);
+  const encryptedPassword: string = cryptr.encrypt(password);
   await credentialsRepository.insertCredential({
     ...credentialData,
-    password: encryptedPasswrod,
+    password: encryptedPassword,
   });
 };
 

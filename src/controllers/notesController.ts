@@ -9,3 +9,23 @@ export const createNote = async (req: Request, res: Response) => {
   await notesService.createNote({ userId, ...noteData });
   res.sendStatus(201);
 };
+
+export const getNotes = async (req: Request, res: Response) => {
+  const userId: number = res.locals.user.id;
+  const notes = await notesService.getNotes(userId);
+  res.send(notes);
+};
+
+export const getnoteById = async (req: Request, res: Response) => {
+  const userId: number = res.locals.user.id;
+  const noteId = parseInt(req.params.id);
+  const note = await notesService.getNoteById(userId, noteId);
+  res.send(note);
+};
+
+export const deletenote = async (req: Request, res: Response) => {
+  const userId: number = res.locals.user.id;
+  const noteId = parseInt(req.params.id);
+  await notesService.deleteNote(userId, noteId);
+  res.sendStatus(204);
+};
