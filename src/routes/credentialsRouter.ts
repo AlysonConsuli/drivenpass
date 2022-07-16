@@ -11,13 +11,14 @@ import { validateToken } from "../middlewares/validateToken.js";
 import { credentialSchema } from "../schemas/credentialsSchema.js";
 
 const credentialRouter = Router();
+credentialRouter.use(validateToken);
 credentialRouter.post(
   "/create-credential",
-  validateToken,
   validateSchema(credentialSchema),
   createCredential
 );
-credentialRouter.get("/credentials", validateToken, getCredentials);
-credentialRouter.get("/credentials/:id", validateToken, getCredentialById);
-credentialRouter.delete("/credentials/:id", validateToken, deleteCredential);
+credentialRouter.get("/credentials", getCredentials);
+credentialRouter.get("/credentials/:id", getCredentialById);
+credentialRouter.delete("/credentials/:id", deleteCredential);
+
 export default credentialRouter;
