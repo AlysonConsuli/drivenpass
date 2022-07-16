@@ -43,6 +43,7 @@ model Notes {
 model Cards {
   id             Int      @id @default(autoincrement())
   userId         Int
+  title          String
   number         String
   cardName       String
   cvv            String
@@ -63,6 +64,7 @@ enum CardType {
 model Wifi {
   id        Int      @id @default(autoincrement())
   userId    Int
+  title     String
   wifiName  String
   password  String
   createdAt DateTime @default(now())

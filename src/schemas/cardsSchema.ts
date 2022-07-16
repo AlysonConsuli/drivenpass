@@ -3,6 +3,7 @@ import { CardType } from "@prisma/client";
 import { CardInsertData } from "../services/cardsService.js";
 
 export const cardSchema = Joi.object<CardInsertData>({
+  title: Joi.string().required(),
   number: Joi.string().required(),
   cardName: Joi.string().required(),
   cvv: Joi.string().required(),
