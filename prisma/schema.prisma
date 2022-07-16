@@ -17,6 +17,7 @@ model Users {
   credentials Credentials[]
   notes       Notes[]
   Cards       Cards[]
+  Wifi        Wifi[]
 }
 
 model Credentials {
@@ -57,4 +58,13 @@ enum CardType {
   credit
   debit
   both
+}
+
+model Wifi {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  wifiName  String
+  password  String
+  createdAt DateTime @default(now())
+  user      Users    @relation(fields: [userId], references: [id])
 }
