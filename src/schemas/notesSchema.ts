@@ -1,5 +1,4 @@
 import Joi from "joi";
-
 import { NoteInsertData } from "../services/notesService.js";
 
 export const noteSchema = Joi.object<NoteInsertData>({
