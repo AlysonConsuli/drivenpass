@@ -34,8 +34,8 @@ model Credentials {
 model Notes {
   id        Int      @id @default(autoincrement())
   userId    Int
-  title     String
-  note      String
+  title     String   @db.VarChar(50)
+  note      String   @db.VarChar(1000)
   createdAt DateTime @default(now())
   user      Users    @relation(fields: [userId], references: [id])
 }
@@ -49,7 +49,7 @@ model Cards {
   cvv            String
   expirationDate String
   password       String
-  isVirtual      Boolean
+  isVirtual      Boolean  @default(false)
   type           CardType
   createdAt      DateTime @default(now())
   user           Users    @relation(fields: [userId], references: [id])

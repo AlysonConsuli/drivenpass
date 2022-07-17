@@ -3,5 +3,5 @@ import { UserInsertData } from "../services/authService.js";
 
 export const authSchema = Joi.object<UserInsertData>({
   email: Joi.string().email().required(),
-  password: Joi.string().required().length(10),
+  password: Joi.string().required().min(10),
 });
