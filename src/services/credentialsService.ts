@@ -1,5 +1,3 @@
-import Cryptr from "cryptr";
-
 import * as credentialsRepository from "../repositories/credentialsRepository.js";
 import { Credentials } from "@prisma/client";
 import {
@@ -7,14 +5,13 @@ import {
   notFoundError,
   unauthorizedError,
 } from "../middlewares/handleErrorsMiddleware.js";
-import * as categoryUtils from "../utils/categoryUtils.js";
+import { encrypt, decrypt } from "../utils/categoryUtils.js";
 
 export type CredentialInsertData = Omit<Credentials, "id" | "createdAt">;
 
 export const createCredential = async (
   credentialData: CredentialInsertData
 ) => {
-  const cryptr = new Cryptr(process.env.CRYPTR_SECRET_KEY);
   const { userId, title, password } = credentialData;
   const titles = await credentialsRepository.findCredentialByTitle(
     userId,
@@ -23,7 +20,7 @@ export const createCredential = async (
   if (titles) {
     throw conflictError("User already has this title");
   }
-  const encryptedPassword: string = cryptr.encrypt(password);
+  const encryptedPassword: string = encrypt(password);
   await credentialsRepository.insertCredential({
     ...credentialData,
     password: encryptedPassword,
@@ -34,7 +31,10 @@ export const getCredentials = async (userId: number) => {
   const credentials = await credentialsRepository.findCredentialsByUserId(
     userId
   );
-  const credentialsDecrypted = categoryUtils.decrypt(credentials);
+  const credentialsDecrypted = credentials.map((credential) => {
+    const decryptedPassword: string = decrypt(credential.password);
+    return { ...credential, password: decryptedPassword };
+  });
   return credentialsDecrypted;
 };
 
@@ -51,8 +51,8 @@ export const getCredentialById = async (
   if (credential.userId !== userId) {
     throw unauthorizedError("Credential belongs to another user");
   }
-  const credentialDecrypted = categoryUtils.decrypt([credential]);
-  return credentialDecrypted[0];
+  const decryptedPassword: string = decrypt(credential.password);
+  return { ...credential, password: decryptedPassword };
 };
 
 export const deleteCredential = async (

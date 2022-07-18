@@ -1,25 +1,22 @@
-import Cryptr from "cryptr";
-import { Cards, CardType } from "@prisma/client";
-
+import { Cards } from "@prisma/client";
 import {
   conflictError,
   notFoundError,
   unauthorizedError,
 } from "../middlewares/handleErrorsMiddleware.js";
 import * as cardsRepository from "../repositories/cardsRepository.js";
-import * as categoryUtils from "../utils/categoryUtils.js";
+import { encrypt, decrypt } from "../utils/categoryUtils.js";
 
 export type CardInsertData = Omit<Cards, "id" | "createdAt">;
 
 export const createCard = async (cardData: CardInsertData) => {
-  const cryptr = new Cryptr(process.env.CRYPTR_SECRET_KEY);
   const { userId, title, password, cvv } = cardData;
   const titles = await cardsRepository.findCardByTitle(userId, title);
   if (titles) {
     throw conflictError("User already has this title");
   }
-  const encryptedPassword: string = cryptr.encrypt(password);
-  const encryptedCvv: string = cryptr.encrypt(cvv);
+  const encryptedPassword: string = encrypt(password);
+  const encryptedCvv: string = encrypt(cvv);
   await cardsRepository.insertCard({
     ...cardData,
     password: encryptedPassword,
@@ -29,7 +26,11 @@ export const createCard = async (cardData: CardInsertData) => {
 
 export const getCards = async (userId: number) => {
   const cards = await cardsRepository.findCardsByUserId(userId);
-  const cardsDecrypted = categoryUtils.decrypt(cards);
+  const cardsDecrypted = cards.map((card) => {
+    const decryptedPassword: string = decrypt(card.password);
+    const decryptedCvv: string = decrypt(card.cvv);
+    return { ...card, password: decryptedPassword, cvv: decryptedCvv };
+  });
   return cardsDecrypted;
 };
 
@@ -41,8 +42,9 @@ export const getCardById = async (userId: number, cardId: number) => {
   if (card.userId !== userId) {
     throw unauthorizedError("Card belongs to another user");
   }
-  const cardDecrypted = categoryUtils.decrypt([card]);
-  return cardDecrypted[0];
+  const decryptedPassword: string = decrypt(card.password);
+  const decryptedCvv: string = decrypt(card.cvv);
+  return { ...card, password: decryptedPassword, cvv: decryptedCvv };
 };
 
 export const deleteCard = async (userId: number, cardId: number) => {
